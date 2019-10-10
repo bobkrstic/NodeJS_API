@@ -2,6 +2,12 @@
 
 const express = require("express");
 const app = express();
+// logging in requests
+const morgan = require("morgan");
+
+// app.use(morgan("combined"));
+// the amount of info is logged in based on combined/short
+app.use(morgan("short"));
 
 app.get("/", (req, res) => {
   console.log("Responding to root route");
