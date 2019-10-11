@@ -1,14 +1,50 @@
 // load our app server using express
-
-const express = require("express");
+var express = require("express");
 const app = express();
-// logging in requests
+// logging in requests with morgan package
 const morgan = require("morgan");
+var mysql = require("mysql");
 
 // app.use(morgan("combined"));
 // the amount of info is logged in based on combined/short
 // everything is logged into the terminal, not into the "inspect element" in the browser console.
 app.use(morgan("short"));
+
+// specifying route for fetching data based on the user id
+app.get("/user/:id", (req, res) => {
+  console.log("Fetching user with id: " + req.params.id);
+
+  // the id is now stored in req.params.id
+  // here we need to use that information to get the data from mysql base
+  var connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "root",
+    socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
+    database: "myDataBase"
+  });
+
+  // connection.connect(function(err) {
+  //   if (err) throw err;
+  //   console.log("Connected");
+  // });
+
+  const userId = req.params.id;
+  const queryString = "SELECT * FROM users WHERE id = ?";
+  // executing sequel query to pull down data from the database
+  connection.query(queryString, [userId], (err, rows, fields) => {
+    console.log("I think we fetched users successfully");
+    if (err) {
+      console.log("Failed to query for users: " + err);
+      res.sendStatus(500);
+      return;
+    }
+    console.log("Connected");
+    res.json(rows);
+  });
+  // res.end();
+});
 
 // specify the root directory, root route
 // the first landing page
