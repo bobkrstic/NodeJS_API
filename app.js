@@ -1,21 +1,72 @@
 // load our app server using express
 var express = require("express");
 const app = express();
-// logging in requests with morgan package
 const morgan = require("morgan");
 var mysql = require("mysql");
 
-// app.use(morgan("combined"));
-// the amount of info is logged in based on combined/short
-// everything is logged into the terminal, not into the "inspect element" in the browser console.
+// npm i body-parser
+const bodyParser = require("body-parser");
+// to make sure app uses body-parser
+// helps process the request easier
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// our application server is now going to able to serve all of the files
+// inside the "public"
+app.use(express.static("./public"));
+
 app.use(morgan("short"));
 
-// specifying route for fetching data based on the user id
+app.post("/user_create", (req, res) => {
+  console.log("Trying to create a new user...");
+  console.log("First name: " + req.body.create_first_name);
+  // capturing input from a user
+  const firstName = req.body.create_first_name;
+  const lastName = req.body.create_last_name;
+
+  // first_name last_name the way they are defined in the data base
+
+  const connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "root",
+    socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
+    database: "myDataBase"
+  });
+
+  const queryString = "INSERT INTO users (first_name, last_name) VALUES (?, ?)";
+  // next step is the sequel query to use the input data and place it into the table (data base)
+  connection.query(
+    queryString,
+    [firstName, lastName],
+    (err, results, fields) => {
+      if (err) {
+        console.log("Failed to insert new user: " + err);
+        res.sendStatus(500);
+        return;
+      }
+      console.log("Inserted a new user with id: ", results.insertedId);
+      res.end();
+    }
+  );
+
+  // res.end();
+});
+
+// function getConnection() {
+//   return mysql.createConnection({
+//     host: "localhost",
+//     port: 3306,
+//     user: "root",
+//     password: "root",
+//     socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
+//     database: "myDataBase"
+//   });
+// }
+
 app.get("/user/:id", (req, res) => {
   console.log("Fetching user with id: " + req.params.id);
 
-  // the id is now stored in req.params.id
-  // here we need to use that information to get the data from mysql base
   var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -25,14 +76,9 @@ app.get("/user/:id", (req, res) => {
     database: "myDataBase"
   });
 
-  // connection.connect(function(err) {
-  //   if (err) throw err;
-  //   console.log("Connected");
-  // });
-
   const userId = req.params.id;
   const queryString = "SELECT * FROM users WHERE id = ?";
-  // executing sequel query to pull down data from the database
+
   connection.query(queryString, [userId], (err, rows, fields) => {
     console.log("I think we fetched users successfully");
     if (err) {
@@ -46,28 +92,32 @@ app.get("/user/:id", (req, res) => {
   // res.end();
 });
 
-// specify the root directory, root route
-// the first landing page
-// the first parametar is the request from the browser
-// the second one is the response that we are sending to the browser
-// the response that we are giving to the request
 app.get("/", (req, res) => {
   console.log("Responding to root route");
   res.send("Hello from Root");
 });
 
 app.get("/users", (req, res) => {
-  // we will now send data to the browser
-  // the route is "/users"
-  const user1 = { id: "1", firstName: "Bob", lastName: "Krstic" };
-  const user2 = { id: "2", firstName: "Jack", lastName: "Sparrow" };
-  res.json([user1, user2]);
-
-  //   res.send("Nodemon auto updates when I save this file");
+  const connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "root",
+    socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
+    database: "myDataBase"
+  });
+  const queryString = "SELECT * FROM users";
+  connection.query(queryString, (err, rows, fields) => {
+    if (err) {
+      console.log("Failed to query for users: " + err);
+      res.sendStatus(500);
+      return;
+    }
+    res.json(rows);
+  });
 });
 
 // localhost:3003
-// server is listening on this address
 app.listen(3003, () => {
   console.log("Server is up and listening on 3003");
 });
