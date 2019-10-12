@@ -86,14 +86,15 @@ app.get("/user/:id", (req, res) => {
     console.log("Connected");
     res.json(rows);
   });
-  // res.end();
 });
 
+// main route landing page
 app.get("/", (req, res) => {
   console.log("Responding to root route");
   res.send("Hello from Root");
 });
 
+// getting all the users (all rows from the database table)
 app.get("/users", (req, res) => {
   const connection = mysql.createConnection({
     host: "localhost",
@@ -103,6 +104,7 @@ app.get("/users", (req, res) => {
     socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
     database: "myDataBase"
   });
+
   const queryString = "SELECT * FROM users";
   connection.query(queryString, (err, rows, fields) => {
     if (err) {
