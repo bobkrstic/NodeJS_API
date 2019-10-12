@@ -1,4 +1,4 @@
-// will contain all user related routes
+// This file will contain all user related routes
 // refactoring our code
 // with Router
 const express = require("express");
