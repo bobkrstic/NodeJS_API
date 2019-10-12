@@ -65,15 +65,19 @@ router.post("/user_create", (req, res) => {
   );
 });
 
+// creating "pool" to avoid connection issues
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "root",
+  socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
+  database: "myDataBase"
+});
+
 function getConnection() {
-  return mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root",
-    socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
-    database: "myDataBase"
-  });
+  return pool;
 }
 
 module.exports = router;
