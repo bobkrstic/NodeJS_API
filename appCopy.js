@@ -1,3 +1,5 @@
+// SAVING THIS FILE TO USE IT AS A GUIDE WITH ALL THE HELPFUL COMMENTS
+
 // load our app server using express
 var express = require("express");
 const app = express();
