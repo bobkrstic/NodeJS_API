@@ -23,8 +23,6 @@ app.post("/user_create", (req, res) => {
   const firstName = req.body.create_first_name;
   const lastName = req.body.create_last_name;
 
-  // first_name last_name the way they are defined in the data base
-
   const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -34,6 +32,7 @@ app.post("/user_create", (req, res) => {
     database: "myDataBase"
   });
 
+  // first_name last_name the way they are defined in the data base
   const queryString = "INSERT INTO users (first_name, last_name) VALUES (?, ?)";
   // next step is the sequel query to use the input data and place it into the table (data base)
   connection.query(
@@ -49,8 +48,6 @@ app.post("/user_create", (req, res) => {
       res.end();
     }
   );
-
-  // res.end();
 });
 
 // function getConnection() {
