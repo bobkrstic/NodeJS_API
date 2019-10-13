@@ -68,12 +68,12 @@ router.post("/user_create", (req, res) => {
 // creating "pool" to avoid connection issues
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "root",
-  socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
-  database: "myDataBase"
+  host: "us-cdbr-iron-east-05.cleardb.net",
+  // port: 3306,
+  user: "b6cd3301561a7d",
+  password: "fb27a141",
+  // socket: "	/Applications/MAMP/tmp/mysql/mysql.sock",
+  database: "heroku_f21714883e8fb20"
 });
 
 function getConnection() {
